@@ -6,7 +6,7 @@ const SKILL_CATEGORIES = {
   languages: {
     title: 'Programming Languages',
     icon: Code,
-    skills: ['Python', 'Java', 'C#'],
+    skills: ['Python', 'C#', 'HTML', 'CSS'],
   },
   tools: {
     title: 'Tools & Software',

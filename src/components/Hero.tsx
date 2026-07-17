@@ -5,7 +5,7 @@ import { ArrowDown, ArrowUpRight } from 'lucide-react';
 const TITLES = [
   'Front-End Developer',
   'Web Designer',
-  'MERN Stack Developer'
+  'Web Developer'
 ];
 
 export const Hero: React.FC = () => {
@@ -101,7 +101,7 @@ export const Hero: React.FC = () => {
             transition={{ duration: 0.8, delay: 0.5 }}
             className="text-sm md:text-base text-white/60 font-sans max-w-lg mt-6 leading-relaxed"
           >
-            Crafting responsive web applications with refined, cinematic design and precise logic. Combining standard MERNStack structures, Python solutions, and a strong eye for clean typography to build elegant digital products.
+            Crafting responsive web applications with refined, cinematic design and precise logic. Combining modern full-stack structures, Python solutions, and a strong eye for clean typography to build elegant digital products.
           </motion.p>
 
           {/* CTA Buttons */}

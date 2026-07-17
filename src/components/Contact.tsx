@@ -7,19 +7,46 @@ export const Contact: React.FC = () => {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) return;
-    
+
     setIsSubmitting(true);
-    // Simulate API call
-    setTimeout(() => {
+    setErrorMessage(null);
+    try {
+      const response = await fetch('https://formsubmit.co/ajax/shofiya641@gmail.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+          _subject: 'New Message from Portfolio',
+          _captcha: 'false'
+        })
+      });
+
+      const data = await response.json();
+      if (response.ok && data.success !== 'false') {
+        setSubmitStatus('success');
+        setFormData({ name: '', email: '', message: '' });
+        setTimeout(() => setSubmitStatus('idle'), 6000);
+      } else {
+        throw new Error(data.message || 'Form submission failed');
+      }
+    } catch (err: any) {
+      console.error('Form submission error:', err);
+      setSubmitStatus('error');
+      setErrorMessage(err.message || 'An unexpected error occurred. Please try again.');
+      setTimeout(() => setSubmitStatus('idle'), 8000);
+    } finally {
       setIsSubmitting(false);
-      setSubmitStatus('success');
-      setFormData({ name: '', email: '', message: '' });
-      setTimeout(() => setSubmitStatus('idle'), 5000);
-    }, 1500);
+    }
   };
 
   const socialLinks = [
@@ -148,25 +175,51 @@ export const Contact: React.FC = () => {
               </div>
 
               {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="clickable group relative w-full sm:w-fit px-8 py-3.5 bg-white text-black hover:bg-black hover:text-white disabled:bg-zinc-700 disabled:text-zinc-400 rounded-full font-sans text-xs uppercase tracking-[0.2em] font-semibold border border-white transition-all duration-500 overflow-hidden cursor-pointer focus:outline-none flex items-center justify-center gap-2"
-              >
-                {isSubmitting ? (
-                  <span>Sending...</span>
-                ) : submitStatus === 'success' ? (
-                  <span className="flex items-center gap-1">
-                    Sent Successfully
-                    <Sparkles className="w-3.5 h-3.5 text-yellow-500" />
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-1.5">
-                    Send Message
-                    <Send className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                  </span>
+              <div className="flex flex-col gap-3">
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="clickable group relative w-full sm:w-fit px-8 py-3.5 bg-white text-black hover:bg-black hover:text-white disabled:bg-zinc-700 disabled:text-zinc-400 rounded-full font-sans text-xs uppercase tracking-[0.2em] font-semibold border border-white transition-all duration-500 overflow-hidden cursor-pointer focus:outline-none flex items-center justify-center gap-2"
+                >
+                  {isSubmitting ? (
+                    <span>Sending...</span>
+                  ) : submitStatus === 'success' ? (
+                    <span className="flex items-center gap-1">
+                      Sent Successfully
+                      <Sparkles className="w-3.5 h-3.5 text-yellow-500" />
+                    </span>
+                  ) : submitStatus === 'error' ? (
+                    <span className="flex items-center gap-1 text-red-400">
+                      Failed — Try Again
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-1.5">
+                      Send Message
+                      <Send className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                    </span>
+                  )}
+                </button>
+
+                {submitStatus === 'success' && (
+                  <motion.p 
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-xs text-white/60 font-sans mt-2 leading-relaxed max-w-lg"
+                  >
+                    ⚠️ <span className="text-white font-semibold">Important:</span> If this is the first submission, please check your inbox (and spam folder) at <span className="text-white font-semibold">shofiya641@gmail.com</span> for an activation email from FormSubmit. You must click the activation link to start receiving messages.
+                  </motion.p>
                 )}
-              </button>
+
+                {submitStatus === 'error' && errorMessage && (
+                  <motion.p 
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-xs text-red-400 font-sans mt-2 leading-relaxed max-w-lg font-medium"
+                  >
+                    ⚠️ {errorMessage}
+                  </motion.p>
+                )}
+              </div>
             </form>
           </div>
         </div>
